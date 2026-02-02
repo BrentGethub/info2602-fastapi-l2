@@ -75,6 +75,35 @@ def delete_user(username: str):
         db.commit()
         print(f'{username} deleted')
 
+# Exercise 1 
+@cli.command()
+def find_user(query: str):
+    with get_session() as db:
+        users = db.exec(
+            select(User).where(
+                (User.username.contains(query)) | (User.email.contains(query))
+            )
+        ).all()
+        if not users:
+            print(f"No users found matching '{query}'")
+            return
+        for user in users:
+            print(user)
+
+
+# Exercise 2 # 
+@cli.command()
+def list_users(
+    limit: int = 10,
+    offset: int = 0):
+    with get_session() as db:
+        users = db.exec(select(User).offset(offset).limit(limit)).all()
+        if not users:
+            print("No users found in this range.")
+            return
+        for user in users:
+            print(user)
+
 
 if __name__ == "__main__":
     cli()
